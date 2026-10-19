@@ -7,7 +7,8 @@ import kg.forester.sg.ssm.TcuSnapshot
 import java.util.Locale
 
 /** What one CSV line is made of. */
-class LogRow(val s: EcuSnapshot, val g: GpsFix?, val lh: Double, val t: TcuSnapshot?, val guard: GuardState)
+class LogRow(val s: EcuSnapshot, val g: GpsFix?, val lh: Double, val t: TcuSnapshot?, val guard: GuardState,
+             val wideband: kg.forester.sg.data.WidebandState = kg.forester.sg.data.WidebandState(), val elapsedMs: Long = 0)
 
 /** One column of the CSV log; [key] is the header (kept as before, so old scripts still read the files). */
 class LogColumn(val key: String, val title: String, val group: String, val get: (LogRow) -> String)
@@ -37,6 +38,11 @@ object LogColumns {
         LogColumn("af_corr_pct", "Коррекция A/F", "Топливо") { f(it.s.afCorrPct) },
         LogColumn("af_learn_pct", "Обучение A/F", "Топливо") { f(it.s.afLearnPct) },
         LogColumn("afr", "AFR", "Топливо") { f(it.s.afr) },
+        LogColumn("wideband_afr", "AFR ШДК USB", "ШДК USB") { f(it.wideband.afr(it.elapsedMs)) },
+        LogColumn("wideband_lambda", "λ ШДК USB", "ШДК USB") { f(it.wideband.lambda(it.elapsedMs), 3) },
+        LogColumn("wideband_status", "Статус ШДК USB", "ШДК USB") { it.wideband.status(it.elapsedMs) },
+        LogColumn("wideband_age_ms", "Возраст данных ШДК, мс", "ШДК USB") { r -> r.wideband.sample?.let { (r.elapsedMs - it.elapsedMs).coerceAtLeast(0).toString() } ?: "" },
+        LogColumn("wideband_demo", "ШДК: тестовые данные", "ШДК USB") { if (it.wideband.link == kg.forester.sg.data.WidebandLinkState.DEMO) "1" else "0" },
         LogColumn("fuel_lh", "Расход, л/ч", "Топливо") { "%.3f".format(Locale.US, it.lh) },
         LogColumn("timing_deg", "УОЗ", "Зажигание и детонация") { f(it.s.timingDeg) },
         LogColumn("knock_deg", "Коррекция детонации", "Зажигание и детонация") { f(it.s.knockDeg) },

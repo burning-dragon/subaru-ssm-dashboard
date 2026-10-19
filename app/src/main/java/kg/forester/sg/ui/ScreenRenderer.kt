@@ -34,7 +34,7 @@ object ScreenRenderer {
     private var segment: Typeface? = null
 
     /** This moment's values, for drawing outside composition. */
-    fun ctxNow() = MetricCtx(Repo.live.value, Repo.tcu.value, Repo.trip.value, Repo.gps.value, Repo.guard.value, Repo.rrValues.value, SensorBox.readings.value)
+    fun ctxNow() = MetricCtx(Repo.live.value, Repo.tcu.value, Repo.trip.value, Repo.gps.value, Repo.guard.value, Repo.rrValues.value, SensorBox.readings.value, kg.forester.sg.data.Wideband.state.value, android.os.SystemClock.elapsedRealtime())
 
     /** Everything a page can show: the built-in values, the ticked «Датчики» parameters, the box inputs. */
     fun catalogue(): List<Indicator> = Metrics.all(Repo.rrAvailable.value, Repo.settings.watchIds)

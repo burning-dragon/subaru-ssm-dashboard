@@ -24,6 +24,8 @@ class MetricCtx(
     val rr: Map<String, Double>,
     /** SensorBox values by input ("A0", "TC0"). */
     val box: Map<String, kg.forester.sg.data.BoxReading> = emptyMap(),
+    val wideband: kg.forester.sg.data.WidebandState = kg.forester.sg.data.WidebandState(),
+    val elapsedMs: Long = 0,
 )
 
 /**
@@ -75,6 +77,8 @@ object Metrics {
         Indicator("inj", "Впрыск", "Впрыск", Lucide.Syringe, "мс", "%.2f", 0f, 20f, "Топливо") { it.e.injPwMs },
         Indicator("injDuty", "Загрузка форсунок", "Форсунки", Lucide.Percent, "%", "%.0f", 0f, 100f, "Топливо", warnAbove = 85f) { it.e.injDutyPct },
         Indicator("afr", "AFR", "AFR", Lucide.Flame, "", "%.1f", 10f, 20f, "Топливо") { it.e.afr },
+        Indicator("wideband_afr", "AFR ШДК (USB)", "AFR ШДК", Lucide.Flame, "", "%.2f", 7f, 23f, "ШДК USB") { it.wideband.afr(it.elapsedMs) },
+        Indicator("wideband_lambda", "λ ШДК (AFR / 14,7)", "λ ШДК", Lucide.Flame, "λ", "%.3f", 0.5f, 1.6f, "ШДК USB") { it.wideband.lambda(it.elapsedMs) },
         Indicator("afcorr", "Коррекция A/F", "Корр. A/F", Lucide.SlidersHorizontal, "%", "%+.1f", -25f, 25f, "Топливо") { it.e.afCorrPct },
         Indicator("aflearn", "Обучение A/F", "Обуч. A/F", Lucide.Brain, "%", "%+.1f", -25f, 25f, "Топливо") { it.e.afLearnPct },
         Indicator("fuel", "Расход, л/ч", "Расход", Lucide.Fuel, "л/ч", "%.1f", 0f, 40f, "Топливо") { it.trip.instLh.toFloat() },
@@ -193,7 +197,8 @@ fun rememberMetricCtx(): MetricCtx {
     val guard by Repo.guard.collectAsState()
     val rr by Repo.rrValues.collectAsState()
     val box by kg.forester.sg.data.SensorBox.readings.collectAsState()
-    return MetricCtx(e, t, trip, gps, guard, rr, box)
+    val wideband by kg.forester.sg.data.Wideband.state.collectAsState()
+    return MetricCtx(e, t, trip, gps, guard, rr, box, wideband, android.os.SystemClock.elapsedRealtime())
 }
 
 /** Tops of the scales that grow with the car (see [Scales]): boost in bar, MAF in g/s, load in g/rev. */

@@ -230,6 +230,10 @@ class Settings(ctx: Context) {
         set(v) = p.edit().putString("relays", v).apply()
 
     /** The SensorBox: on or off, the board, what is wired to which input (JSON, see SensorBox). */
+    var wideband: String
+        get() = p.getString("wideband", "{}")!!
+        set(v) = p.edit().putString("wideband", v).apply()
+
     var sensorBox: String
         get() = p.getString("sensorBox", "{}")!!
         set(v) = p.edit().putString("sensorBox", v).apply()
@@ -623,6 +627,7 @@ object Repo {
             ctx.applicationContext.getSharedPreferences("settings", Context.MODE_PRIVATE).edit().remove("demo").apply()
             BoxPresets.load(ctx.applicationContext)
             SensorBox.load()
+            Wideband.load()
             Relays.load()
             Displays.load()
             UsbScreen.load()

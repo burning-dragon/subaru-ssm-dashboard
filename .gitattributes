@@ -1,0 +1,4 @@
+# Firmware manifests hash these source bytes; preserve them on Windows as well.
+hardware/sensorbox/sensorbox.ino text eol=lf
+hardware/usbscreen/usbscreen.ino text eol=lf
+hardware/usbscreen/boards.h text eol=lf

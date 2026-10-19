@@ -8,6 +8,7 @@ local.properties
 .idea/
 *.iml
 .DS_Store
+.btssm
 
 # local research dumps (third-party files, see README for sources)
 research/

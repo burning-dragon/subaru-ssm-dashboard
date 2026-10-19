@@ -23,29 +23,39 @@ object ScreenLink {
     private val flashing = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
     /** Devices with a session running. */
     private val active = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+    private val flashLeases = java.util.concurrent.ConcurrentHashMap<String, UsbOwnership.Lease>()
 
     fun isScreen(vid: Int) = vid == 0x303A
 
-    fun pauseForFlash(device: String, on: Boolean) { if (on) flashing += device else flashing -= device }
+    fun pauseForFlash(device: String, on: Boolean) {
+        if (on) flashing += device else flashing -= device
+        UsbDeviceRegistry.flash(device, on)
+        if (on) {
+            if (!flashLeases.containsKey(device)) flashLeases[device] = UsbDeviceRegistry.awaitFlash(device)
+        } else flashLeases.remove(device)?.close()
+    }
 
     /** Every screen on USB gets its own session: two or three can be on at once. */
     fun start(scope: CoroutineScope, ctx: Context, usb: UsbManager, askPermission: (android.hardware.usb.UsbDevice) -> Unit) {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
+                UsbDeviceRegistry.refresh(usb)
                 val found = runCatching { SensorBoxLink.drivers(usb).filter { isScreen(it.device.vendorId) } }.getOrDefault(emptyList())
                 UsbScreen.status.value = if (found.isEmpty()) "Экран не найден на USB" else ""
                 for (d in found) {
                     val n = d.device.deviceName
-                    if (n in active || n in flashing) continue
+                    if (n in active || n in flashing || !UsbDeviceRegistry.available(d.device, UsbDeviceRegistry.SCREEN)) continue
                     if (!usb.hasPermission(d.device)) {
                         UsbScreen.status.value = "Разрешите доступ к экрану в окне Android"
                         askPermission(d.device)
                         continue
                     }
+                    val lease = UsbDeviceRegistry.claim(d.device, UsbDeviceRegistry.SCREEN) ?: continue
                     active += n
                     scope.launch(Dispatchers.IO) {
-                        try { runCatching { session(ctx, usb, d) }.onFailure { SsmTrace.log("screen $n: $it") } } finally { active -= n }
-                    }
+                        try { runCatching { session(ctx, usb, d, lease) }.onFailure { SsmTrace.log("screen $n: $it") } }
+                        finally { lease.close(); active -= n }
+                    }.invokeOnCompletion { lease.close(); active -= n }
                 }
                 delay(2000)
             }
@@ -74,11 +84,13 @@ object ScreenLink {
         }
     }
 
-    private fun session(ctx: Context, usb: UsbManager, d: UsbSerialDriver) {
+    private suspend fun session(ctx: Context, usb: UsbManager, d: UsbSerialDriver, lease: UsbOwnership.Lease) {
         val dev = d.device.deviceName
         val conn = usb.openDevice(d.device) ?: return
+        lease.interrupt = { runCatching { conn.close() }; Unit }
         val port = d.ports[0]
         try {
+            if (!lease.permitted) return
             port.open(conn)
             port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
             // DTR and RTS stay low: on this USB they are the reset and boot lines
@@ -94,13 +106,14 @@ object ScreenLink {
             SsmTrace.log("screen: ${inf.board} ${inf.w}x${inf.h} fw ${inf.fw} id ${inf.id}")
             UsbScreen.attach(inf, dev)
             val id = inf.id.ifEmpty { "dev:$dev" }
-            try { loop(ctx, port, lines, inf, id, dev) } finally { UsbScreen.detach(id) }
+            try { loop(ctx, port, lines, inf, id, dev, lease) } finally { UsbScreen.detach(id) }
         } finally {
             runCatching { port.close() }
+            runCatching { conn.close() }
         }
     }
 
-    private fun loop(ctx: Context, port: UsbSerialPort, lines: Lines, inf: ScreenInfo, id: String, dev: String) {
+    private suspend fun loop(ctx: Context, port: UsbSerialPort, lines: Lines, inf: ScreenInfo, id: String, dev: String, lease: UsbOwnership.Lease) {
         var prev: IntArray? = null
         var drawn = Triple(-1, -1, "")
         var bright = -1
@@ -114,7 +127,7 @@ object ScreenLink {
                 "Y R" -> prev = null
             }
         }
-        while (dev !in flashing) {
+        while (dev !in flashing && lease.permitted && kotlinx.coroutines.currentCoroutineContext().isActive) {
             val t0 = System.currentTimeMillis()
             val cfg = UsbScreen.cfgOf(id)
             if (cfg.brightness != bright) { bright = cfg.brightness; port.write("B $bright\n".toByteArray(), 300) }

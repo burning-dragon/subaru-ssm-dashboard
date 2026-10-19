@@ -136,12 +136,14 @@ class EcuService : Service() {
         guard.ctx = applicationContext
         Voice.start(this)
         Fyt.bind(this)
+        UsbDeviceRegistry.refresh(getSystemService(Context.USB_SERVICE) as UsbManager)
         pollJob = scope.launch { pollLoop() }
         (getSystemService(Context.USB_SERVICE) as UsbManager).let { usb ->
             RelayEngine.start(scope)
             SensorBoxLink.start(scope, usb, { SensorBoxLink.drivers(usb).let { it + unknownSerial(usb, it) } },
                 { isOp2(it) || isOp13(it) || isCanable(it) }) { requestUsbPermission(usb, it) }
             ScreenLink.start(scope, this, usb) { requestUsbPermission(usb, it) }
+            InnovateLink.start(scope, usb) { requestUsbPermission(usb, it) }
         }
         wakeWatch.start(scope)
         scope.launch { headUnitWatch() }
@@ -201,6 +203,7 @@ class EcuService : Service() {
                 "elm_wifi" -> { wifiSession(explicit = true); delay(3000); continue }
             }
             val all = adapterProber.findAllDrivers(usb) + unknownSerial(usb, adapterProber.findAllDrivers(usb))
+            UsbDeviceRegistry.refresh(usb)
             logUsbDevices(usb, all)
             // the SensorBox (an Arduino next to the cable) and devices still being asked whether they are it
             val drivers = SensorBoxLink.forEcu(all)
@@ -243,12 +246,16 @@ class EcuService : Service() {
             }
             if (!SensorBoxLink.claimForEcu(driver)) { delay(500); continue }
             Repo.link.value = LinkState.CONNECTING
-            val conn = usb.openDevice(driver.device)
+            val conn = runCatching { usb.openDevice(driver.device) }.getOrNull()
             if (conn == null) {
                 SensorBoxLink.releaseEcu()
                 delay(2000); continue
             }
             val port = driver.ports[0]
+            SensorBoxLink.ecuLease?.interrupt = { runCatching { conn.close() }; Unit }
+            if (SensorBoxLink.ecuLease?.permitted != true) {
+                conn.close(); SensorBoxLink.releaseEcu(); continue
+            }
             SsmTrace.log("=== ${driver.javaClass.simpleName} %04X:%04X, адаптер $kind, шина ${s.bus}"
                 .format(driver.device.vendorId, driver.device.productId))
             var op2: OpenPort2? = null
@@ -303,10 +310,11 @@ class EcuService : Service() {
                 Repo.link.value = LinkState.ERROR
                 Repo.linkMessage.value = e.message ?: "Ошибка связи"
             } finally {
-                EcuLink.client?.close()
+                runCatching { EcuLink.client?.close() }
                 EcuLink.client = null
-                streams?.close()
-                if (op2 != null) op2.close() else runCatching { port.close() }
+                runCatching { streams?.close() }
+                runCatching { if (op2 != null) op2.close() else port.close() }
+                runCatching { conn.close() }
                 SensorBoxLink.releaseEcu()
                 logger?.close(); logger = null
             }
@@ -608,7 +616,7 @@ class EcuService : Service() {
         var transport: SsmTransport? = null
         var transportKline = true
         // demo switched on: leave the car (the demo loop takes over)
-        while (scope.isActive && !Repo.settings.demo) {
+        while (scope.isActive && !Repo.settings.demo && SensorBoxLink.ecuLease?.permitted != false) {
             val kline = buses[busIdx % buses.size]
             if (transport == null || transportKline != kline) {
                 transport?.close()
@@ -689,7 +697,7 @@ class EcuService : Service() {
             tcuAddrs = null
             tcuNextTryMs = 0
             SsmTrace.polling = true
-            while (scope.isActive && failures < 5 && !Repo.settings.demo) {
+            while (scope.isActive && failures < 5 && !Repo.settings.demo && SensorBoxLink.ecuLease?.permitted != false) {
                 if (transport.passive) {
                     passiveRound(transport, addrs, skip, afSensor)
                     continue
@@ -890,7 +898,7 @@ class EcuService : Service() {
         var linkLogged = false
         var limitsLogged = emptyList<String>()
         try {
-            while (scope.isActive && !Repo.settings.demo && on()) {
+            while (scope.isActive && !Repo.settings.demo && on() && SensorBoxLink.ecuLease?.permitted != false) {
                 val frames = bus.read(100)
                 val now = System.currentTimeMillis()
                 for (f in frames) {
@@ -944,7 +952,7 @@ class EcuService : Service() {
             Repo.pollAddresses.value = obd.polledCount
             var failures = 0
             SsmTrace.polling = true
-            while (scope.isActive && failures < 5 && !Repo.settings.demo) {
+            while (scope.isActive && failures < 5 && !Repo.settings.demo && SensorBoxLink.ecuLease?.permitted != false) {
                 val now = System.currentTimeMillis()
                 val snap = EcuLink.mutex.withLock { runCatching { obd.poll(now) }.getOrNull() }
                 if (snap == null) {
@@ -1391,7 +1399,7 @@ class CsvLogger(ctx: Context, val extras: List<RrParam> = emptyList()) {
     }
 
     fun write(s: kg.forester.sg.ssm.EcuSnapshot, g: GpsFix?, lh: Double, t: TcuSnapshot?, extra: Map<String, Double> = emptyMap()) {
-        val row = LogRow(s, g, lh, t, Repo.guard.value)
+        val row = LogRow(s, g, lh, t, Repo.guard.value, kg.forester.sg.data.Wideband.state.value, android.os.SystemClock.elapsedRealtime())
         w.write(
             (listOf(s.timeMs.toString()) + columns.map { it.get(row) }).joinToString(",") + extras.joinToString("") { p ->
                 "," + (extra[p.id]?.let { v ->

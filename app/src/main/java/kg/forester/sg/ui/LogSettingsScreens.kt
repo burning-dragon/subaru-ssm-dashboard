@@ -226,7 +226,7 @@ fun SettingsScreen() {
                 1 -> ShortcutSettings()
                 3 -> CarAdapterSettings()
                 4 -> FeatureSettings()
-                5 -> SensorBoxSettings()
+                5 -> ExtraSensorSettings()
                 6 -> UsbScreenSettings()
                 else -> VoiceSettings()
             }

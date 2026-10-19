@@ -29,10 +29,22 @@ object SensorBoxLink {
     private val asked = HashSet<String>()
     /** The ECU loop's device while it has it open. */
     @Volatile var ecuDevice: String? = null
+    @Volatile var ecuLease: UsbOwnership.Lease? = null
+        private set
     /** The device the box last answered on: the one the firmware update goes to. */
     @Volatile var lastBoxDevice: String? = null
     /** The device being flashed (also as its bootloader): nobody else opens it meanwhile. */
+    private var flashLease: UsbOwnership.Lease? = null
     @Volatile var flashDevice: String? = null
+        set(value) {
+            flashLease?.close(); flashLease = null
+            field?.let { UsbDeviceRegistry.flash(it, false) }
+            field = value
+            value?.let {
+                UsbDeviceRegistry.flash(it, true)
+                flashLease = UsbDeviceRegistry.awaitFlash(it)
+            }
+        }
     @Volatile private var paused = false
     /** Lines for the box (output commands, heartbeats), written by the session loop. */
     private val outbox = java.util.concurrent.ConcurrentLinkedQueue<String>()
@@ -70,7 +82,7 @@ object SensorBoxLink {
     /** What the ECU loop may use: the box and boards still being asked are left out (only with the box switched on). */
     fun forEcu(all: List<UsbSerialDriver>): List<UsbSerialDriver> {
         // the colour screen (an ESP32-S3) is never an ECU cable
-        val drivers = all.filter { !ScreenLink.isScreen(it.device.vendorId) }
+        val drivers = all.filter { !ScreenLink.isScreen(it.device.vendorId) && UsbDeviceRegistry.available(it.device, UsbDeviceRegistry.ECU) }
         flashDevice?.let { f -> if (!SensorBox.enabled.value) return drivers.filter { it.device.deviceName != f } }
         if (!SensorBox.enabled.value) return drivers
         synchronized(lock) {
@@ -80,16 +92,22 @@ object SensorBoxLink {
 
     /** The ECU loop takes [d]: the box loop leaves it alone. False when the box loop got there first. */
     fun claimForEcu(d: UsbSerialDriver): Boolean = synchronized(lock) {
-        if (d.device.deviceName in busy || d.device.deviceName == flashDevice) false else { ecuDevice = d.device.deviceName; true }
+        if (d.device.deviceName in busy || d.device.deviceName == flashDevice) false else {
+            val lease = UsbDeviceRegistry.claim(d.device, UsbDeviceRegistry.ECU) ?: return@synchronized false
+            ecuLease = lease
+            ecuDevice = d.device.deviceName
+            true
+        }
     }
 
-    fun releaseEcu() { ecuDevice = null }
+    fun releaseEcu() { ecuLease?.close(); ecuLease = null; ecuDevice = null }
 
     /** Every few seconds: ask a device nobody holds whether it is the box, read it while it is. */
     suspend fun loop(scope: CoroutineScope, usb: UsbManager, list: () -> List<UsbSerialDriver>, isAdapter: (UsbSerialDriver) -> Boolean,
                      askPermission: (android.hardware.usb.UsbDevice) -> Unit) {
         var demoT = 0f
         while (scope.isActive) {
+            UsbDeviceRegistry.refresh(usb)
             if (Repo.demoOn.value) {
                 demoT += 0.1f
                 demoFrame(demoT)
@@ -105,7 +123,8 @@ object SensorBoxLink {
             val candidate = synchronized(lock) {
                 drivers.firstOrNull { d ->
                     val n = d.device.deviceName
-                    n !in busy && n !in asked && n != ecuDevice && !isAdapter(d) && !ScreenLink.isScreen(d.device.vendorId)
+                    n !in busy && n !in asked && n != ecuDevice && !isAdapter(d) && !ScreenLink.isScreen(d.device.vendorId) &&
+                        UsbDeviceRegistry.available(d.device, UsbDeviceRegistry.BOX)
                 }?.also { busy += it.device.deviceName; asked += it.device.deviceName }
             }
             if (candidate == null) {
@@ -122,7 +141,15 @@ object SensorBoxLink {
                 delay(4000)
                 continue
             }
-            val wasBox = runCatching { session(usb, candidate) }.onFailure { SsmTrace.log("SensorBox: $it") }.getOrDefault(false)
+            val lease = UsbDeviceRegistry.claim(candidate.device, UsbDeviceRegistry.BOX)
+            if (lease == null) {
+                synchronized(lock) { busy -= n; asked -= n }
+                delay(300); continue
+            }
+            val wasBox = try { session(usb, candidate, lease) }
+                catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                catch (e: Exception) { SsmTrace.log("SensorBox: $e"); false }
+                finally { lease.close(); synchronized(lock) { busy -= n } }
             // the box that went quiet is asked again; anything else only after it is plugged in again
             synchronized(lock) { busy -= n; if (wasBox) asked -= n }
             delay(1000)
@@ -130,12 +157,14 @@ object SensorBoxLink {
     }
 
     /** Open, ask, and read for as long as the box answers; true when it was the box. */
-    private suspend fun session(usb: UsbManager, d: UsbSerialDriver): Boolean {
+    private suspend fun session(usb: UsbManager, d: UsbSerialDriver, lease: UsbOwnership.Lease): Boolean {
         val conn = usb.openDevice(d.device) ?: return false
+        lease.interrupt = { runCatching { conn.close() }; Unit }
         var known = false
         val port = d.ports[0]
         val id = "%04X:%04X".format(d.device.vendorId, d.device.productId)
         try {
+            if (!lease.permitted) return false
             port.open(conn)
             port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
             runCatching { port.dtr = true } // a 32U4 sends nothing until the host raises DTR; a Nano restarts on it
@@ -145,7 +174,7 @@ object SensorBoxLink {
             var lastData = System.currentTimeMillis()
             var askedAt = 0L
             while (true) {
-                if (paused) return known
+                if (paused || !lease.permitted || !kotlinx.coroutines.currentCoroutineContext().isActive || !SensorBox.enabled.value) return known
                 if (known) while (true) { val l = outbox.poll() ?: break; port.write("$l\n".toByteArray(Charsets.ISO_8859_1), 300) }
                 val now = System.currentTimeMillis()
                 if (now - askedAt > 3000 && now - lastData > 1500) {
@@ -181,6 +210,7 @@ object SensorBoxLink {
         } finally {
             if (SensorBox.info.value?.via == "USB $id") { SensorBox.info.value = null; SensorBox.readings.value = emptyMap() }
             runCatching { port.close() }
+            runCatching { conn.close() }
         }
     }
 

@@ -133,6 +133,7 @@ object FirmwareFlasher {
     private fun pickDevice(usb: UsbManager): UsbSerialDriver {
         val all = SensorBoxLink.drivers(usb)
         val cands = all.filter { d ->
+            !kg.forester.sg.service.UsbDeviceRegistry.isWideband(d.device) &&
             d.device.deviceName != SensorBoxLink.ecuDevice && !kg.forester.sg.service.ScreenLink.isScreen(d.device.vendorId) &&
                 !kg.forester.sg.ssm.OpenPort2.matches(d.device.vendorId, d.device.productId) &&
                 !kg.forester.sg.ssm.OpenPort13.matches(d.device.vendorId, d.device.productId)
