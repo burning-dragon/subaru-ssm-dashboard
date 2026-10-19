@@ -1,0 +1,1554 @@
+{
+  "profile": "carberry42",
+  "ecuId": "3D04EA4605",
+  "source": "CarBerry SDlogger rev1.9; RomRaider logger definitions",
+  "url": "https://github.com/Crowley2012/SubaruTuning/blob/master/Definitions/Logger/Carberry-SDlogger-rev1.9.xml",
+  "sha256": "05a817bbb34fa11344999c8c276143b4e27df357c5cea8b126d2af4d01e38afa",
+  "params": [
+    {
+      "id": "E1",
+      "sourceId": "E1",
+      "t": 1,
+      "n": "IAM",
+      "ru": "IAM (множитель адаптации детонации)",
+      "d": "",
+      "a": [
+        131357,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "raw ecu value",
+          "x",
+          "0",
+          ""
+        ],
+        [
+          "multiplier",
+          "x/16",
+          "0.0000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E3",
+      "sourceId": "E3",
+      "t": 1,
+      "n": "CL/OL Fueling",
+      "ru": "Режим топливоподачи (замкнутый/открытый контур)",
+      "d": "Fuel system status. [8 = Closed Loop (normal)]  [10 = Open Loop (normal)]  [7 = Open Loop due insufficient coolant temp]  [14 = Open Loop due to system failure].",
+      "a": [
+        134626,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "status",
+          "x+6",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E4",
+      "sourceId": "E4",
+      "t": 1,
+      "n": "Turbo Dynamics Integral Cumulative",
+      "ru": "Динамика турбо: интегральная коррекция (накопительная)",
+      "d": "Turbo dynamics integral cumulative wastegate duty correction.",
+      "a": [
+        134272,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "absolute %",
+          "(x*.00390625)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E6",
+      "sourceId": "E6",
+      "t": 1,
+      "n": "Target Boost",
+      "ru": "Целевой наддув",
+      "d": "Target boost map target after compensations are applied.",
+      "a": [
+        134282,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "bar relative sea level",
+          "(x-760)*0.001333224",
+          "0.000",
+          ""
+        ],
+        [
+          "bar absolute",
+          "x*0.001333224",
+          "0.000",
+          ""
+        ],
+        [
+          "psi relative sea level",
+          "(x-760)*0.01933677",
+          "0.00",
+          ""
+        ],
+        [
+          "psi absolute",
+          "x*0.01933677",
+          "0.00",
+          ""
+        ],
+        [
+          "mmHg absolute",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E7",
+      "sourceId": "E7",
+      "t": 1,
+      "n": "Turbo Dynamics Proportional",
+      "ru": "Динамика турбо: пропорциональная коррекция",
+      "d": "Turbo dynamics proportional wastegate duty correction.",
+      "a": [
+        134274,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "absolute %",
+          "(x*.00390625)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E10",
+      "sourceId": "E10",
+      "t": 1,
+      "n": "Feedback Knock Correction",
+      "ru": "Коррекция по детонации FBKC (обратная связь)",
+      "d": "Current feedback timing correction.",
+      "a": [
+        133972,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "degrees",
+          "(x*.3515625)-45",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E11",
+      "sourceId": "E11",
+      "t": 1,
+      "n": "Knock Correction Advance (IAM only)",
+      "ru": "Опережение по детонации KCA (только IAM)",
+      "d": "",
+      "a": [
+        133973,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "degrees",
+          "(x*.3515625)-45",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E12",
+      "sourceId": "E12",
+      "t": 1,
+      "n": "Fine Learning Knock Correction",
+      "ru": "Коррекция по детонации FLKC (точное обучение)",
+      "d": "Current fine learning timing correction.",
+      "a": [
+        133977,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "degrees",
+          "(x*.3515625)-45",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E13",
+      "sourceId": "E13",
+      "t": 1,
+      "n": "A/F Learning #1 A (Stored)",
+      "ru": "Топливное обучение #1 A (сохранённое)",
+      "d": "",
+      "a": [
+        131342,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.048828125)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E14",
+      "sourceId": "E14",
+      "t": 1,
+      "n": "A/F Learning #1 B (Stored)",
+      "ru": "Топливное обучение #1 B (сохранённое)",
+      "d": "",
+      "a": [
+        131344,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.048828125)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E15",
+      "sourceId": "E15",
+      "t": 1,
+      "n": "A/F Learning #1 C (Stored)",
+      "ru": "Топливное обучение #1 C (сохранённое)",
+      "d": "",
+      "a": [
+        131346,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.048828125)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E16",
+      "sourceId": "E16",
+      "t": 1,
+      "n": "A/F Learning #1 D (Stored)",
+      "ru": "Топливное обучение #1 D (сохранённое)",
+      "d": "",
+      "a": [
+        131348,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.048828125)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E17",
+      "sourceId": "E17",
+      "t": 1,
+      "n": "A/F Learning #1 (Current)",
+      "ru": "Топливное обучение #1 (текущее)",
+      "d": "",
+      "a": [
+        133516,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.048828125)-50",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E18",
+      "sourceId": "E18",
+      "t": 1,
+      "n": "Idle Speed Target Map Selection",
+      "ru": "Выбор карты целевых оборотов ХХ",
+      "d": "Determines current 'Idle Speed' map that is being used. For roms with 4 tables per transmission -> 1=MAP A, 2=MAP B, 3=MAP C, 4+=MAP D. For roms with 2 tables per transmission -> 1=MAP A, 2+=MAP B",
+      "a": [
+        134062,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "raw ecu value",
+          "x+1",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E19",
+      "sourceId": "E19",
+      "t": 1,
+      "n": "Fuel Injector #1 Latency (Direct)",
+      "ru": "Задержка форсунки #1 (прямое чтение)",
+      "d": "",
+      "a": [
+        133544,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "ms",
+          "x*.004",
+          "0.000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E20",
+      "sourceId": "E20",
+      "t": 1,
+      "n": "Manifold Absolute Pressure (Direct)",
+      "ru": "Абсолютное давление во впускном коллекторе (прямое чтение)",
+      "d": "",
+      "a": [
+        131306,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "kPa absolute",
+          "x*0.1333224",
+          "0.00",
+          ""
+        ],
+        [
+          "bar absolute",
+          "x*0.001333224",
+          "0.000",
+          ""
+        ],
+        [
+          "psi absolute",
+          "x*0.01933677",
+          "0.00",
+          ""
+        ],
+        [
+          "mmHg absolute",
+          "x",
+          "0",
+          ""
+        ],
+        [
+          "inHg absolute",
+          "x*0.03937",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E21",
+      "sourceId": "E21",
+      "t": 1,
+      "n": "Manifold Relative Sea Level Pressure (Direct)",
+      "ru": "Относительное давление в коллекторе от уровня моря (прямое чтение)",
+      "d": "",
+      "a": [
+        131306,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "kPa relative sea level",
+          "(x-760)*0.1333224",
+          "0.000",
+          ""
+        ],
+        [
+          "bar relative sea level",
+          "(x-760)*0.001333224",
+          "0.000",
+          ""
+        ],
+        [
+          "psi relative sea level",
+          "(x-760)*0.01933677",
+          "0.00",
+          ""
+        ],
+        [
+          "mmHg relative sea level",
+          "(x-760)",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E22",
+      "sourceId": "E22",
+      "t": 1,
+      "n": "Ignition Base Timing",
+      "ru": "Базовое опережение зажигания",
+      "d": "",
+      "a": [
+        133912,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "degrees",
+          "(x*.3515625)-20",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E23",
+      "sourceId": "E23",
+      "t": 1,
+      "n": "Tip-in Throttle",
+      "ru": "Резкое открытие дросселя (tip-in)",
+      "d": "",
+      "a": [
+        137177,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.58823529)-75.29411712",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E24",
+      "sourceId": "E24",
+      "t": 1,
+      "n": "Tip-in Enrichment (Last Calculated)",
+      "ru": "Обогащение при tip-in (последнее рассчитанное)",
+      "d": "",
+      "a": [
+        133898,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "raw enrichment value",
+          "x*4",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E25",
+      "sourceId": "E25",
+      "t": 1,
+      "n": "Gear (Calculated)",
+      "ru": "Передача (расчётная)",
+      "d": "",
+      "a": [
+        133342,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "position",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E26",
+      "sourceId": "E26",
+      "t": 1,
+      "n": "Fine Learning Table Offset",
+      "ru": "Индекс таблицы FLKC",
+      "d": "",
+      "a": [
+        133978,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "index position",
+          "x+1",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E27",
+      "sourceId": "E27",
+      "t": 1,
+      "n": "A/F Learning Airflow Range (Current)",
+      "ru": "Диапазон расхода воздуха топливного обучения (текущий)",
+      "d": "",
+      "a": [
+        133623,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "offset",
+          "x+1",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E28",
+      "sourceId": "E28",
+      "t": 1,
+      "n": "Fuel Injector #1 Pulse Width (Direct)",
+      "ru": "Длительность впрыска форсунки #1 (прямое чтение)",
+      "d": "",
+      "a": [
+        136532,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "ms",
+          "x*.004",
+          "0.000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E29",
+      "sourceId": "E29",
+      "t": 1,
+      "n": "A/F Sensor #1 (Direct)",
+      "ru": "Лямбда-зонд #1 (прямое чтение)",
+      "d": "",
+      "a": [
+        133454,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "lambda",
+          "x*.0001220703125",
+          "0.00",
+          ""
+        ],
+        [
+          "AFR",
+          "x*0.00179443359375",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E30",
+      "sourceId": "E30",
+      "t": 1,
+      "n": "A/F Correction #1 (Direct)",
+      "ru": "Топливная коррекция #1 (прямое чтение)",
+      "d": "",
+      "a": [
+        133472,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x*.01220703125)-100",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E71",
+      "sourceId": "E71",
+      "t": 1,
+      "n": "Manifold Pressure Sensor",
+      "ru": "Датчик давления во впускном коллекторе",
+      "d": "",
+      "a": [
+        133140,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "volts",
+          "x*.000076293945",
+          "0.0000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E72",
+      "sourceId": "E72",
+      "t": 1,
+      "n": "Manifold Relative Pressure (Direct)",
+      "ru": "Относительное давление во впускном коллекторе (прямое чтение)",
+      "d": "",
+      "a": [
+        137142,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "kPa relative",
+          "(x-32768)*0.1333224",
+          "0.00",
+          ""
+        ],
+        [
+          "bar relative",
+          "(x-32768)*0.001333224",
+          "0.000",
+          ""
+        ],
+        [
+          "psi relative",
+          "(x-32768)*0.01933677",
+          "0.00",
+          ""
+        ],
+        [
+          "mmHg relative",
+          "x-32768",
+          "0",
+          ""
+        ],
+        [
+          "inHg relative",
+          "(x-32768)*0.03937007",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E73",
+      "sourceId": "E73",
+      "t": 1,
+      "n": "Primary Wastegate Duty Maximum",
+      "ru": "Макс. скважность перепускного клапана (основная)",
+      "d": "",
+      "a": [
+        134268,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x*.00390625",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E74",
+      "sourceId": "E74",
+      "t": 1,
+      "n": "Primary Open Loop Map Enrichment",
+      "ru": "Обогащение по основной карте открытого контура",
+      "d": "",
+      "a": [
+        133557,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "lambda",
+          "1/(1+(x*.000030517578125))",
+          "0.00",
+          ""
+        ],
+        [
+          "estimated AFR",
+          "14.7/(1+(x*.000030517578125))",
+          "0.00",
+          ""
+        ],
+        [
+          "fuel-air equivalence ratio",
+          "(1+(x*.000030517578125))",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E75",
+      "sourceId": "E75",
+      "t": 1,
+      "n": "Fueling Final Base",
+      "ru": "Итоговая базовая топливоподача",
+      "d": "",
+      "a": [
+        133694,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "lambda",
+          "1/(x*.00048828125)",
+          "0.00",
+          ""
+        ],
+        [
+          "estimated AFR",
+          "14.7/(x*.00048828125)",
+          "0.00",
+          ""
+        ],
+        [
+          "fuel-air equivalence ratio",
+          "x*.00048828125",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "E76",
+      "sourceId": "E76",
+      "t": 1,
+      "n": "Closed Loop Fueling Target",
+      "ru": "Целевой состав смеси в замкнутом контуре",
+      "d": "",
+      "a": [
+        133458,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "lambda",
+          "x*.0001220703125",
+          "0.00",
+          ""
+        ],
+        [
+          "estimated AFR",
+          "x*.00179443359375",
+          "0.00",
+          ""
+        ],
+        [
+          "fuel-air equivalence ratio",
+          "1/(x*.0001220703125)",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E152",
+      "sourceId": "E152",
+      "t": 1,
+      "n": "Vehicle Speed Ratio Calculation",
+      "ru": "",
+      "d": "E152 - Vehicle Speed Ratio Calculation for use with NLTS.",
+      "a": [
+        135258,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "raw",
+          "7910240.085/x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E153",
+      "sourceId": "E153",
+      "t": 1,
+      "n": "Engine Load",
+      "ru": "",
+      "d": "E153 - Current engine load (g/rev) as determined by the ECU.",
+      "a": [
+        131316,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "g/rev",
+          "x*0.0001220703125",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E154",
+      "sourceId": "E154",
+      "t": 1,
+      "n": "Knock Correction Mode",
+      "ru": "",
+      "d": "E154 - Current Knock Correction Mode (0=Knock Control Disabled, 1=FBKC Mode, 2=IAM Mode, 3=FLKC Mode).",
+      "a": [
+        135250,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "mode",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E155",
+      "sourceId": "E155",
+      "t": 1,
+      "n": "IAM Knock Correction",
+      "ru": "",
+      "d": "E155 - Current Knock Correction applied by Rough Correction (KCRM based on IAM).",
+      "a": [
+        133973,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "degrees",
+          "(x*.3515625)-45",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E157",
+      "sourceId": "E157",
+      "t": 1,
+      "n": "Speed Density Current IAT/PORT Temp Compensation",
+      "ru": "",
+      "d": "E157-Current IAT Compensation applied to Base Engine Load.",
+      "a": [
+        137110,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Load Multiplier",
+          "x*2/65536",
+          "0.0000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E170",
+      "sourceId": "E170",
+      "t": 1,
+      "n": "Current Percent IAT Sensor Usage",
+      "ru": "",
+      "d": "E170-Current Percent IAT Sensor Usage.",
+      "a": [
+        135285,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "((x*256)+255)*0.00152587890625",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E171",
+      "sourceId": "E171",
+      "t": 1,
+      "n": "Current Estimated Port Temp",
+      "ru": "",
+      "d": "E171-Current Estimated Port Temp based on IAT/ECT and Engine Airflow.",
+      "a": [
+        135290,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "F",
+          "x*.00439453125-40",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E158",
+      "sourceId": "E158",
+      "t": 1,
+      "n": "Volumetric Efficiency",
+      "ru": "",
+      "d": "E158 - Current Volumetric Efficiency Compensation applied to Base Engine Load, as determined by Speed Density Base Load Compensation (MAP vs. RPM).",
+      "a": [
+        137106,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Load Multiplier",
+          "x*200/65536",
+          "0.0000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E159",
+      "sourceId": "E159",
+      "t": 1,
+      "n": "Cylinder-1 Knock Sensor Level",
+      "ru": "",
+      "d": "",
+      "a": [
+        135264,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E160",
+      "sourceId": "E160",
+      "t": 1,
+      "n": "Cylinder-3 Knock Sensor Level",
+      "ru": "",
+      "d": "",
+      "a": [
+        135266,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E161",
+      "sourceId": "E161",
+      "t": 1,
+      "n": "Cylinder-2 Knock Sensor Level",
+      "ru": "",
+      "d": "",
+      "a": [
+        135268,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E162",
+      "sourceId": "E162",
+      "t": 1,
+      "n": "Cylinder-4 Knock Sensor Level",
+      "ru": "",
+      "d": "",
+      "a": [
+        135270,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E163",
+      "sourceId": "E163",
+      "t": 1,
+      "n": "Cylinder-1 Knock Level Threshold",
+      "ru": "",
+      "d": "",
+      "a": [
+        135272,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E164",
+      "sourceId": "E164",
+      "t": 1,
+      "n": "Cylinder-3 Knock Level Threshold",
+      "ru": "",
+      "d": "",
+      "a": [
+        135274,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E165",
+      "sourceId": "E165",
+      "t": 1,
+      "n": "Cylinder-2 Knock Level Threshold",
+      "ru": "",
+      "d": "",
+      "a": [
+        135276,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E166",
+      "sourceId": "E166",
+      "t": 1,
+      "n": "Cylinder-4 Knock Level Threshold",
+      "ru": "",
+      "d": "",
+      "a": [
+        135278,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Raw",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E187",
+      "sourceId": "E187",
+      "t": 1,
+      "n": "Cylinder-1 Knock Count",
+      "ru": "",
+      "d": "",
+      "a": [
+        135280,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "Knock Events",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E167",
+      "sourceId": "E167",
+      "t": 1,
+      "n": "Cylinder-3 Knock Count",
+      "ru": "",
+      "d": "",
+      "a": [
+        135281,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "Knock Events",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E168",
+      "sourceId": "E168",
+      "t": 1,
+      "n": "Cylinder-2 Knock Count",
+      "ru": "",
+      "d": "",
+      "a": [
+        135282,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "Knock Events",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E169",
+      "sourceId": "E169",
+      "t": 1,
+      "n": "Cylinder-4 Knock Count",
+      "ru": "",
+      "d": "",
+      "a": [
+        135283,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "Knock Events",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E172",
+      "sourceId": "E172",
+      "t": 1,
+      "n": "Knock Count (Combined)",
+      "ru": "",
+      "d": "",
+      "a": [
+        135284,
+        1,
+        -1
+      ],
+      "c": [
+        [
+          "Knock Events",
+          "x",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E173",
+      "sourceId": "E173",
+      "t": 1,
+      "n": "Knock Reset Counter",
+      "ru": "",
+      "d": "",
+      "a": [
+        135286,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "Engine Revolutions",
+          "x/2",
+          "0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E174",
+      "sourceId": "E174",
+      "t": 1,
+      "n": "Fuel Injector #1 Pulse Width Pre_Low-PW Compensation",
+      "ru": "",
+      "d": "",
+      "a": [
+        133686,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "ms",
+          "x*.004",
+          "0.000",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E175",
+      "sourceId": "E175",
+      "t": 1,
+      "n": "Mass Airflow Table Value",
+      "ru": "",
+      "d": "",
+      "a": [
+        137098,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "g/s",
+          "x*0.0091552734375",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E176",
+      "sourceId": "E176",
+      "t": 1,
+      "n": "MAF/SD Blend Percentage",
+      "ru": "",
+      "d": "100% is full SD",
+      "a": [
+        135294,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x*100/65536",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E177",
+      "sourceId": "E177",
+      "t": 1,
+      "n": "Manifold Pressure Delta",
+      "ru": "",
+      "d": "",
+      "a": [
+        137144,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "PSIa/sample",
+          "(x-32768)*0.01933677",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E178",
+      "sourceId": "E178",
+      "t": 1,
+      "n": "Engine Load Smoothing Factor",
+      "ru": "",
+      "d": "",
+      "a": [
+        135298,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x*100/65536",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E179",
+      "sourceId": "E179",
+      "t": 1,
+      "n": "Rear O2 Volts Direct",
+      "ru": "",
+      "d": "",
+      "a": [
+        137056,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "V",
+          "x*5/1023",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E180",
+      "sourceId": "E180",
+      "t": 1,
+      "n": "TGV Sensor Right",
+      "ru": "",
+      "d": "",
+      "a": [
+        137040,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "V",
+          "x*0.0000762939453125",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E181",
+      "sourceId": "E181",
+      "t": 1,
+      "n": "TGV Sensor Left",
+      "ru": "",
+      "d": "",
+      "a": [
+        137028,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "V",
+          "x*0.0000762939453125",
+          "0.00",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E182",
+      "sourceId": "E182",
+      "t": 1,
+      "n": "Ethanol Content",
+      "ru": "",
+      "d": "",
+      "a": [
+        135216,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x/655.36",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E183",
+      "sourceId": "E183",
+      "t": 1,
+      "n": "Flex Fuel Map Blend Ratio #1",
+      "ru": "",
+      "d": "",
+      "a": [
+        135218,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x/655.36",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E184",
+      "sourceId": "E184",
+      "t": 1,
+      "n": "Flex Fuel Map Blend Ratio #2",
+      "ru": "",
+      "d": "",
+      "a": [
+        135312,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x/655.36",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E185",
+      "sourceId": "E185",
+      "t": 1,
+      "n": "Flex Fuel Map Blend Ratio #3",
+      "ru": "",
+      "d": "",
+      "a": [
+        135314,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "x/655.36",
+          "0.0",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "CB42_E186",
+      "sourceId": "E186",
+      "t": 1,
+      "n": "Ethanol Content Global Fuel Compensation",
+      "ru": "",
+      "d": "",
+      "a": [
+        135220,
+        2,
+        -1
+      ],
+      "c": [
+        [
+          "%",
+          "(x/327.68) - 100",
+          "0.0",
+          ""
+        ]
+      ]
+    }
+  ]
+}

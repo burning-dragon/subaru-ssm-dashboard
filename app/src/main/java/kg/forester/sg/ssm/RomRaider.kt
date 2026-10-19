@@ -166,6 +166,22 @@ object RomRaider {
     @Volatile private var all: List<RrParam>? = null
     /** ROM id → extended parameters with that ROM's address. */
     @Volatile private var byRom: Map<String, List<RrParam>> = emptyMap()
+    @Volatile private var carberry: List<RrParam>? = null
+
+    internal fun parseCarberry(text: String): List<RrParam> {
+        val o = JSONObject(text)
+        require(o.getString("ecuId") == "3D04EA4605")
+        val ps = o.getJSONArray("params")
+        return List(ps.length()) { i ->
+            val p = ps.getJSONObject(i)
+            val a = p.getJSONArray("a")
+            param(p, RrParam.Kind.EXT, a.getInt(0), a.getInt(1), a.getInt(2), emptyList())
+                .copy(desc = "CarBerry 4.2 · SDlogger rev1.9. " + p.optString("d"))
+        }
+    }
+
+    internal fun useCarberry(profile: String, rom: String, tcu: Boolean) =
+        profile == "carberry42" && rom.equals("3D04EA4605", ignoreCase = true) && !tcu
     var source = ""
         private set
 
@@ -239,7 +255,8 @@ object RomRaider {
      * What this unit can give: standard parameters and switches its init lists, calculated ones whose parts it
      * has, and the extended parameters known for its ROM. [tcu] picks the transmission unit's list.
      */
-    fun available(ctx: Context, init: EcuInit, tcu: Boolean): List<RrParam> {
+    fun available(ctx: Context, init: EcuInit, tcu: Boolean,
+                  profile: String = kg.forester.sg.data.Repo.settings.loggerProfile): List<RrParam> {
         val defs = load(ctx)
         fun forUnit(t: Int) = if (tcu) t == 2 else t == 1 || t == 3
         val std = defs.filter { p ->
@@ -253,7 +270,13 @@ object RomRaider {
             forUnit(p.target) && p.kind == RrParam.Kind.STD && p.addr < 0 && p.expr != null && p.deps.all { it in ids }
         }
         val rom = init.romId.uppercase()
-        val ext = if (tcu) emptyList() else byRom[rom]?.filter { it.expr != null } ?: sibling(rom)
+        val ext = if (tcu) emptyList() else if (profile == "carberry42") {
+            if (!useCarberry(profile, rom, tcu)) emptyList() else {
+                val defs = carberry ?: parseCarberry(ctx.assets.open("carberry42_logger.json").bufferedReader().use { it.readText() })
+                    .also { carberry = it }
+                defs.filter { it.expr != null }
+            }
+        } else byRom[rom]?.filter { it.expr != null } ?: sibling(rom)
         // the driver's own addresses (engine unit only), for ROMs this base has no extended parameters for
         val own = if (tcu) emptyList() else kg.forester.sg.data.CustomParams.list().map { it.toParam() }.filter { it.expr != null }
         return std + calculated + ext + own

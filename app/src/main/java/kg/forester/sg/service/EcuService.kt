@@ -672,7 +672,7 @@ class EcuService : Service() {
             val car = kg.forester.sg.ssm.EcuIds.car(this, init.romId)
             Repo.linkMessage.value = "ROM ${init.romId}" + (car?.let { " ($it)" } ?: "") + " · ${client.transport.name}"
             RomRaider.load(this)
-            RomRaider.siblingOf(init.romId)?.let { SsmTrace.log("no extended parameters for ROM ${init.romId}, using sibling $it") }
+            if (Repo.settings.loggerProfile != "carberry42") RomRaider.siblingOf(init.romId)?.let { SsmTrace.log("no extended parameters for ROM ${init.romId}, using sibling $it") }
             SsmTrace.log("ECU init: SSM ${init.ssmId} ROM ${init.romId} caps ${init.capabilities.toHex(" ")}")
             val addrs = choosePollAddresses(client, init)
             if (addrs == null) {
@@ -1002,6 +1002,7 @@ class EcuService : Service() {
 
         fun setup(init: EcuInit) {
             all = RomRaider.load(this@EcuService)
+            profile = Repo.settings.loggerProfile
             avail = RomRaider.available(this@EcuService, init, tcu)
             this.init = init
             custom = Repo.customVersion.value
@@ -1021,10 +1022,16 @@ class EcuService : Service() {
         private var internal: Set<String> = emptySet()
         private var init: EcuInit? = null
         private var custom = 0
+        private var profile = "stock"
 
         suspend fun poll(client: SsmClient) {
             // own addresses added or edited while connected: the list of what this unit has changes
-            if (custom != Repo.customVersion.value) {
+            if (custom != Repo.customVersion.value || (!tcu && profile != Repo.settings.loggerProfile)) {
+                if (!tcu && profile != Repo.settings.loggerProfile) {
+                    profile = Repo.settings.loggerProfile
+                    Repo.rrValues.value = Repo.rrValues.value - avail.map { it.id }.toSet()
+                    logger?.close(); logger = null
+                }
                 custom = Repo.customVersion.value
                 init?.let { avail = RomRaider.available(this@EcuService, it, tcu); if (tcu) tcuAvail = avail else ecuAvail = avail }
                 version = -1

@@ -195,6 +195,9 @@ class Settings(ctx: Context) {
 
     /** Parameters from the RomRaider list the user ticked on the «Датчики» screen, comma-separated ids. */
     /** The driver's own ECU addresses (JSON, see CustomParams). */
+    var loggerProfile: String
+        get() = p.getString("loggerProfile", "stock")!!
+        set(v) = p.edit().putString("loggerProfile", v).apply()
     var customParams: String
         get() = p.getString("customParams", "[]")!!
         set(v) = p.edit().putString("customParams", v).apply()

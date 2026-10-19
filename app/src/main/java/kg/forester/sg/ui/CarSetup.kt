@@ -93,6 +93,7 @@ fun CarAdapterSettings() {
     var gearbox by remember { mutableStateOf(s.gearbox) }
     var demo by remember { mutableStateOf(s.demo) }
     var awd by remember { mutableStateOf(s.awd) }
+    var loggerProfile by remember { mutableStateOf(s.loggerProfile) }
 
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Panel(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState())) {
@@ -196,6 +197,19 @@ fun CarAdapterSettings() {
         }
         Panel(Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState())) {
             PanelTitle(Lucide.Usb, "Адаптер")
+            Spacer(Modifier.height(10.dp))
+            T("Профиль логгера SSM", 15.sp)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                listOf("stock" to "Штатный", "carberry42" to "CarBerry 4.2").forEach { (key, label) ->
+                    Chip(label, loggerProfile == key, { loggerProfile = key; s.loggerProfile = key })
+                }
+            }
+            if (loggerProfile == "carberry42") {
+                T("SDlogger rev1.9 · дополнительные каналы на экране «Датчики». Выбор применяется во время опроса SSM.", 12.sp, C.Sub)
+                if (init != null && init?.romId != "3D04EA4605")
+                    T("ECU ID не совпадает с 3D04EA4605: расширенные каналы CarBerry недоступны.", 12.sp, C.Orange)
+                if (obdMode) T("В режиме OBD-II профиль SSM не применяется.", 12.sp, C.Orange)
+            }
             Spacer(Modifier.height(10.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 adapters.forEach { (k, l) -> Chip(l, adapter == k, { adapter = k; s.adapter = k }) }
