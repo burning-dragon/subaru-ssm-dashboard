@@ -1,7 +1,7 @@
 {
- "tag": "v0.9-beta21",
- "name": "0.9-beta21",
- "apk": "https://github.com/surtaeff/subaru-ssm-dashboard/releases/download/v0.9-beta21/subaru-ssm-dashboard.apk",
- "size": 128053305,
- "notes": "Теперь CarPulse: работает и с другими машинами по OBD-II. Приборка с картой и линией маршрута, шаблоны «Моего экрана», свой редактор спорт-дисплея, исправления расчётов и OpenPort на машинах без CAN."
+ "tag": "v0.9-beta22",
+ "name": "0.9-beta22",
+ "apk": "https://github.com/surtaeff/subaru-ssm-dashboard/releases/download/v0.9-beta22/subaru-ssm-dashboard.apk",
+ "size": 128285360,
+ "notes": "OpenPort на Teyes CC4 Pro и новых магнитолах, исправленное радио (диапазоны, пресеты, частота сразу), логи с короткой колонкой Time для EcuEdit, карточка гидротрансформатора, доп датчики на ESP32-S3."
 }
