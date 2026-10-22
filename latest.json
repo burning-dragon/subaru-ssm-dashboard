@@ -1,7 +1,7 @@
 {
- "tag": "v0.9-beta20",
- "name": "0.9-beta20",
- "apk": "https://github.com/surtaeff/subaru-ssm-dashboard/releases/download/v0.9-beta20/subaru-ssm-dashboard.apk",
- "size": 126306173,
- "notes": "Машина на ЭБУ Link как отдельная машина (свой мотор, турбо, форсунки, без ложных выводов), стрелка поверх цифрового окошка, иконки на «Датчиках»."
+ "tag": "v0.9-beta21",
+ "name": "0.9-beta21",
+ "apk": "https://github.com/surtaeff/subaru-ssm-dashboard/releases/download/v0.9-beta21/subaru-ssm-dashboard.apk",
+ "size": 128053305,
+ "notes": "Теперь CarPulse: работает и с другими машинами по OBD-II. Приборка с картой и линией маршрута, шаблоны «Моего экрана», свой редактор спорт-дисплея, исправления расчётов и OpenPort на машинах без CAN."
 }
